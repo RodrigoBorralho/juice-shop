@@ -1,0 +1,16 @@
+name: Simple Hello World
+
+on:
+push:                 #trigger https://docs.github.com/pt/actions/reference/workflows-and-actions/events-that-trigger-workflows
+ branches: [ master ]
+
+
+jobs:
+ hello-job:
+ runs-on: ubuntu-latest
+ steps:
+ - name: Say Hello
+ - run: echo "Hello, world! My first GitHub Action ran successfully!" 
+ - run: npm ci
+ - run: npm test
+ - run: npm build
