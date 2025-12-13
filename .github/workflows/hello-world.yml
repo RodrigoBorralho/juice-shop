@@ -13,4 +13,4 @@ jobs:
  - run: echo "Hello, world! My first GitHub Action ran successfully!" 
  - run: npm ci
  - run: npm test
- - run: npm build
+ - run: npm run build
