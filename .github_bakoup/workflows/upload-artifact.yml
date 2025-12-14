@@ -1,0 +1,67 @@
+# This uploades an artificatm which might be useful for store data ready for download, for workflow organization and flexibility, 
+# so that people can use the artifact without the need of installing librarys or dependencies used during the workflow run. 
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  upload-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v4
+      with:
+
+        name: my-artifact
+        # Name of the artifact to upload.
+        # Optional. Default is 'artifact'
+
+        path: my-artifact.txt
+
+        if-no-files-found: warn
+        # The desired behavior if no files are found using the provided path.
+        # Available Options:
+        #   warn: Output a warning but do not fail the action
+        #   error: Fail the action with an error message
+        #   ignore: Do not output any warnings or errors, the action does not fail
+        # Optional. Default is 'warn'
+
+        retention-days: 1
+        # Duration after which artifact will expire in days. 0 means using default retention.
+        # Minimum 1 day.
+        # Maximum 90 days unless changed from the repository settings page.
+        # Optional. Defaults to repository settings.
+
+        compression-level: 1
+        
+        # The level of compression for Zlib to be applied to the artifact archive.
+        # The value can range from 0 to 9.
+        # For large files that are not easily compressed, a value of 0 is recommended for significantly faster uploads.
+        # Optional. Default is '6'
+
+        overwrite: true
+        
+        # If true, an artifact with a matching name will be deleted before a new one is uploaded.
+        # If false, the action will fail if an artifact for the given name already exists.
+        # Does not fail if the artifact does not exist.
+        # Optional. Default is 'false'
+
+        include-hidden-files: false
+        
+        # Whether to include hidden files in the provided path in the artifact
+        # The file contents of any hidden files in the path should be validated before
+        # enabled this to avoid uploading sensitive information.
+        # Optional. Default is 'false'
+
+  download-test:
+    needs: upload-test
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Download Artifact'
+      uses: actions/download-artifact@v5
+      with:
+        name: my-artifact
+        path: download-artifacts
+    - run: ls -R download-artifacts
