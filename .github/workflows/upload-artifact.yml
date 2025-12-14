@@ -1,3 +1,6 @@
+# This uploades an artificatm which might be useful for store data ready for download, for workflow organization and flexibility, 
+# so that people can use the artifact without the need of installing librarys or dependencies used during the workflow run. 
+
 on:
   push:
     branches: [ "master" ]
@@ -51,3 +54,14 @@ jobs:
         # The file contents of any hidden files in the path should be validated before
         # enabled this to avoid uploading sensitive information.
         # Optional. Default is 'false'
+
+  download-test:
+    needs: upload-test
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Download Artifact'
+      uses: actions/download-artifact@v5
+      with:
+        name: my-artifact
+        path: my-artifact.txt
+    - run: ls -R my-artifact
