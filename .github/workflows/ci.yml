@@ -9,14 +9,45 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # fetches the repository code
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3 
+        # install BuildKit
+        # Will create and boot a builder
+        #By default, the docker-container 
+        #driver will be used to be able to build multi-platform images and export cache using a BuildKit container.
 
       - name: Build the Docker image
         uses: docker/build-push-action@v5
+        # we could not use the setup-buildx-action, and just do build-push-action, but builderx is more advanced docker builder
+        # read Dockerfile, npm install, etc, into a container image
         with:
           context: .
-          push: false
+          push: false         #It does not push the finished Docker Image to a registry like Docker Hub or GitHub Packages.
           tags: juice-shop-image:latest
+
+  sast-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep SAST Scan
+        uses: returntocorp/semgrep-action@v1
+
+        
+  sca-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run OWASP Dependency-Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: "juice-shop"
+          path: "."
+          format: "HTML"
+          out: "reports"
+          args: "--disableYarnAudit"
