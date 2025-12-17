@@ -65,4 +65,4 @@ jobs:
       - name: Scan container image with Trivy
         uses: crazy-max/ghaction-container-scan@v3
         with:
-          tarball: /tmp/juice-shop-image.tar
+          tarball:  /tmp/juice-shop-image.tar
