@@ -1,31 +1,32 @@
 name: CI Pipeline
+
 on:
- push:
-  branches: ["master"]
+  push:
+    branches: ["main"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4 # fetches the repository code
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3 
-        # install BuildKit
-        # Will create and boot a builder
-        #By default, the docker-container 
-        #driver will be used to be able to build multi-platform images and export cache using a BuildKit container.
+        uses: docker/setup-buildx-action@v3
 
-      - name: Build the Docker image
+      - name: Build and export to Docker
         uses: docker/build-push-action@v5
-        # we could not use the setup-buildx-action, and just do build-push-action, but builderx is more advanced docker builder
-        # read Dockerfile, npm install, etc, into a container image
         with:
           context: .
-          push: false         #It does not push the finished Docker Image to a registry like Docker Hub or GitHub Packages.
+          push: false
           tags: juice-shop-image:latest
+          outputs: type=docker,dest=/tmp/juice-shop-image.tar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: juice-shop-image
+          path: /tmp/juice-shop-image.tar
 
   sast-scan:
     runs-on: ubuntu-latest
@@ -35,7 +36,6 @@ jobs:
 
       - name: Run Semgrep SAST Scan
         uses: returntocorp/semgrep-action@v1
-
 
   sca-scan:
     runs-on: ubuntu-latest
@@ -61,6 +61,7 @@ jobs:
         with:
           name: juice-shop-image
           path: /tmp
+
       - name: Scan container image with Trivy
         uses: crazy-max/ghaction-container-scan@v3
         with:
